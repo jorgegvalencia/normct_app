@@ -1,0 +1,9 @@
+# node modules
+node_modules/
+
+# bower components
+bower_components/
+
+# dist files
+app/frontend/dist/
+app/frontend/images/
