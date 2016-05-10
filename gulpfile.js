@@ -1,12 +1,34 @@
 var gulp   = require('gulp');
 var inject = require('gulp-inject');
 var less   = require('gulp-less');
-var paths  = require('./app/config');
+var nodemon = require('gulp-nodemon')
+var runSequence = require('run-sequence');
+var browserSync = require('browser-sync').create();
+var wiredep = require('wiredep').stream;
+var paths = {
+	"main"       : "./app/frontend/",
+	"index"      : "./app/frontend/index.html",
+	"dist"       : "./app/frontend/dist/",
+	"css"        : "./app/frontend/dist/*.css",
+	"javascript" : "./app/frontend/js/*.js",
+	"less"       : "./app/frontend/less/style.less",
+}
 
-gulp.task('default', ['less', 'watch']);
+gulp.task('default', function () {
+	runSequence('less', 'bower', 'inject', 'nodemon');
+});
 
-gulp.task('watch', function () {
-  gulp.watch(paths.less, ['less', 'inject']);
+gulp.task('nodemon', function () {
+	nodemon({
+		script: 'app/backend/bin/www/',
+		ext: 'js html'
+	});
+});
+
+gulp.task('bower', function () {
+  gulp.src(paths.index)
+    .pipe(wiredep({}))
+    .pipe(gulp.dest(paths.main));
 });
 
 gulp.task('less', function () {
