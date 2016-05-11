@@ -37,6 +37,17 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(express.static(path.join(__dirname, '../../bower_components/')));
 
 // API routes
+
+// param parsing
+app.use(function (req, res, next) {
+	// offset and limit
+	req.offset = parseInt(req.query["offset"]  || 0);
+	req.limit = parseInt(req.query["limit"]  || 10);
+
+	
+	next();
+})
+
 app.use('/api', api);
 
 // catch 404 and forward to error handler
