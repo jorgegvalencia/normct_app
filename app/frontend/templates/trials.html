@@ -1,0 +1,35 @@
+<h2>Clinical Trials</h2>
+<ul class="pagination pagination-sm pull-right">
+  <li ng-class="{ 'disabled' : currentPage = 1 }"><a ng-click="currentPage > 1 && prevPage()">&laquo;</a></li>
+  <li ng-class="{ 'active' : currentPage == 1 }" ><a ng-click="goPage(1)">1</a></li>
+  <li ng-class="{ 'active' : currentPage == 2 }" ><a ng-click="goPage(2)">2</a></li>
+  <li ng-class="{ 'active' : currentPage == 3 }" ><a ng-click="goPage(3)">3</a></li>
+  <li ng-class="{ 'active' : currentPage == 4 }" ><a ng-click="goPage(4)">4</a></li>
+  <li ng-class="{ 'active' : currentPage == 5 }" ><a ng-click="goPage(5)">5</a></li>
+  <li ng-class="{ 'disabled' : currentPage == maxPage }" ><a ng-click="nextPage()">&raquo;</a></li>
+</ul>
+<table class="table table-striped table-hover ">
+  <thead>
+    <tr class="info">
+      <th>NCTID</th>
+      <th>Title</th>
+      <th>Topic</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="trial in trials">
+      <td class="col-lg-2 col-md-2 col-sm-2 col-xs-2"><a>{{trial.nctid}}</a></td>
+      <td class="col-lg-6 col-md-6 col-sm-6 col-xs-6">{{trial.title}}</td>
+      <td class="col-lg-4 col-md-4 col-sm-4 col-xs-4">{{trial.topic}}</td>
+    </tr>
+  </tbody>
+</table>
+<ul class="pagination pagination-sm pull-right">
+  <li ng-class="{ 'disabled' : currentPage = 1 }"><a ng-click="currentPage > 1 && prevPage()">&laquo;</a></li>
+  <li ng-class="{ 'active' : currentPage == 1 }" ><a ng-click="goPage(1)">1</a></li>
+  <li ng-class="{ 'active' : currentPage == 2 }" ><a ng-click="goPage(2)">2</a></li>
+  <li ng-class="{ 'active' : currentPage == 3 }" ><a ng-click="goPage(3)">3</a></li>
+  <li ng-class="{ 'active' : currentPage == 4 }" ><a ng-click="goPage(4)">4</a></li>
+  <li ng-class="{ 'active' : currentPage == 5 }" ><a ng-click="goPage(5)">5</a></li>
+  <li ng-class="{ 'disabled' : currentPage == maxPage }" ><a ng-click="nextPage()">&raquo;</a></li>
+</ul>
