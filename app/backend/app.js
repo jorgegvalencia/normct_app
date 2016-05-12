@@ -34,7 +34,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Give access to bower components
-app.use(express.static(path.join(__dirname, '../../bower_components/')));
+app.use('/bower_components',express.static(path.join(__dirname, '../../bower_components/')));
 
 // API routes
 
