@@ -13,14 +13,20 @@ angular.module('normct')
                 },
                 controller: 'HomeCtrl'
             })
-            .state('concepts', {
-                url: '/concepts',
+            .state('frecuency', {
+                url: '/reports/frecuency',
                 views: {
                     "header": {
                         templateUrl: "templates/partials/_header.html"
                     },
                     "content": {
-                        templateUrl: "templates/concepts.html"
+                        templateUrl: "templates/frecuency.html",
+                        controller: 'FrecuencyReportCtrl',
+                        resolve: {
+                            concepts: function (RESTClient) {
+                                return RESTClient.getConceptsFrecuency(100);
+                            }
+                        }
                     }
                 }
             })
@@ -35,6 +41,26 @@ angular.module('normct')
                     }
                 }
             })
+            .state('concepts', {
+                url: '/concepts',
+                views: {
+                    "header": {
+                        templateUrl: "templates/partials/_header.html"
+                    },
+                    "content": {
+                        templateUrl: "templates/concepts.html",
+                        controller: 'ConceptsCtrl',
+                        resolve: {
+                            concepts: function(RESTClient) {
+                                return RESTClient.getConcepts(0, 100);
+                            },
+                            nconcepts: function(RESTClient) {
+                                return RESTClient.getConceptsNumber();
+                            }
+                        }
+                    }
+                }
+            })
             .state('trials', {
                 url: '/trials',
                 views: {
@@ -43,14 +69,34 @@ angular.module('normct')
                     },
                     "content": {
                         templateUrl: "templates/trials.html",
+                        controller: 'TrialsCtrl',
                         resolve: {
                             trials: function(RESTClient) {
                                 return RESTClient.getTrials(0, 30);
+                            },
+                            ntrials: function(RESTClient) {
+                                return RESTClient.getTrialsNumber();
                             }
-                        },
-                        controller: 'TrialsCtrl'
+                        }
                     }
                 }
             })
-            $urlRouterProvider.otherwise("/home");
+            .state('trials.detail', {
+                url: '/:trialid',
+                views: {
+                    "header": {
+                        templateUrl: "templates/partials/_header.html"
+                    },
+                    "content@": {
+                        templateUrl: "templates/trialDetail.html",
+                        controller: 'TrialDetailCtrl',
+                        resolve: {
+                            trial: function(RESTClient, $stateParams) {
+                                return RESTClient.getTrial($stateParams.trialid);
+                            }
+                        }
+                    }
+                }
+            })
+        $urlRouterProvider.otherwise("/home");
     })

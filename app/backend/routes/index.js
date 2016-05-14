@@ -18,14 +18,70 @@ router.get('/trials', function(req, res) {
 		})
 });
 
+router.get('/trials/count', function(req, res) {
+	var sql = `select count(*) as number
+	from 
+		clinical_trial`;
+	db.conn.query(sql)
+		.then(function(result) {
+			if(result.length > 0){
+				res.status(200).json({ trials: result[0].number});
+			} else {
+				res.status(200).json({ trials: 0});
+			}
+		})
+		.catch(function (err) {
+			console.log(err);
+			res.status(400).json({ error: err});
+		})
+});
+
+router.get('/trials/:trialid', function(req, res) {
+	var sql = `select *
+	from 
+		clinical_trial 
+	limit ${req.offset}, ${req.limit}`;
+	db.conn.query(sql)
+		.then(function(rows) {
+	    	res.status(200).json({ trial: rows });
+		})
+		.catch(function (err) {
+			console.log(err);
+			res.status(400).json({ error: err});
+		})
+});
+
 router.get('/concepts', function(req, res) {
 	var sql = `select *
 	from 
 		concept 
+	where
+		active = 1 
+	order by concept.fsn asc 
 	limit ${req.offset}, ${req.limit}`;
 	db.conn.query(sql)
 		.then(function(rows) {
 	    	res.status(200).json({ concepts: rows });
+		})
+		.catch(function (err) {
+			console.log(err);
+			res.status(400).json({ error: err});
+		})
+});
+
+router.get('/concepts/count', function(req, res) {
+	var sql = `select count(*) as number
+	from 
+		concept 
+	where 
+		active = 1`;
+	db.conn.query(sql)
+		.then(function(result) {
+			if(result.length > 0){
+				res.status(200).json({ concepts: result[0].number});
+			} else {
+				res.status(200).json({ concepts: 0});
+			}
 		})
 		.catch(function (err) {
 			console.log(err);
@@ -48,6 +104,24 @@ router.get('/criteria', function(req, res) {
 		})
 });
 
+router.get('/criteria/count', function(req, res) {
+	var sql = `select count(*) as number
+	from 
+		eligibility_criteria`;
+	db.conn.query(sql)
+		.then(function(result) {
+			if(result.length > 0){
+				res.status(200).json({ criteria: result[0].number});
+			} else {
+				res.status(200).json({ criteria: 0});
+			}
+		})
+		.catch(function (err) {
+			console.log(err);
+			res.status(400).json({ error: err});
+		})
+});
+
 router.get('/match', function(req, res) {
 	var sql = `select *
 	from 
@@ -56,6 +130,24 @@ router.get('/match', function(req, res) {
 	db.conn.query(sql)
 		.then(function(rows) {
 	    	res.status(200).json({ matches: rows });
+		})
+		.catch(function (err) {
+			console.log(err);
+			res.status(400).json({ error: err});
+		})
+});
+
+router.get('/match/count', function(req, res) {
+	var sql = `select count(*) as number
+	from 
+		cmatch`;
+	db.conn.query(sql)
+		.then(function(result) {
+			if(result.length > 0){
+				res.status(200).json({ match: result[0].number});
+			} else {
+				res.status(200).json({ match: 0});
+			}
 		})
 		.catch(function (err) {
 			console.log(err);
@@ -119,6 +211,7 @@ router.get('/reports/frecuency', function (req, res) {
 		cmatch.sctid as sctid, 
 		count(cmatch.number) as frecuency, 
 		concept.fsn as concept, 
+		concept.hierarchy as hierarchy,
 		concept.normalform as normalform 
 	from 
 		cmatch, 

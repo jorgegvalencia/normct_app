@@ -43,8 +43,6 @@ app.use(function (req, res, next) {
 	// offset and limit
 	req.offset = parseInt(req.query["offset"]  || 0);
 	req.limit = parseInt(req.query["limit"]  || 10);
-
-	
 	next();
 })
 

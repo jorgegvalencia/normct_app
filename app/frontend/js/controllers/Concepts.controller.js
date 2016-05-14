@@ -1,20 +1,20 @@
 angular.module('normct')
-    .controller('TrialsCtrl', function($scope, $state, trials, ntrials, RESTClient) {
-    	$scope.limit = 30;
-        $scope.trials = trials;
-        $scope.trialsNumber = ntrials;
+    .controller('ConceptsCtrl', function($scope, concepts, nconcepts, RESTClient) {
+    	$scope.limit = 100;
+        $scope.concepts = concepts;
+        $scope.conceptsNumber = nconcepts;
         $scope.currentPage = 0;
-        $scope.maxPage = Math.round(ntrials/$scope.limit);
+        $scope.maxPage = Math.round(nconcepts/$scope.limit);
 
         var limit = $scope.limit;
-        console.log("Se instancia TrialsCtrl", $scope.maxPage);
+        console.log("Se instancia ConceptsCtrl", $scope.maxPage);
 
         $scope.prevPage = function() {
             var offset = ($scope.currentPage - 1) * limit;
             if (offset >= 0) {
-                RESTClient.getTrials(offset, limit)
-                    .then(function(trials) {
-                        $scope.trials = trials;
+                RESTClient.getConcepts(offset, limit)
+                    .then(function(concepts) {
+                        $scope.concepts = concepts;
                         $scope.currentPage = $scope.currentPage - 1;
                     })
                     .catch(function(error) {
@@ -25,9 +25,9 @@ angular.module('normct')
 
         $scope.nextPage = function() {
             var offset = ($scope.currentPage + 1) * limit;
-            RESTClient.getTrials(offset, limit)
-                .then(function(trials) {
-                    $scope.trials = trials;
+            RESTClient.getConcepts(offset, limit)
+                .then(function(concepts) {
+                    $scope.concepts = concepts;
                     $scope.currentPage = $scope.currentPage + 1;
                 })
                 .catch(function(error) {
@@ -37,18 +37,13 @@ angular.module('normct')
 
         $scope.goPage = function(page) {
             var offset = (page) * limit;
-            RESTClient.getTrials(offset, limit)
-                .then(function(trials) {
-                    $scope.trials = trials;
+            RESTClient.getConcepts(offset, limit)
+                .then(function(concepts) {
+                    $scope.concepts = concepts;
                     $scope.currentPage = page;
                 })
                 .catch(function(error) {
                     alert('error');
                 })
-        }
-
-        $scope.goToTrial = function (trialid) {
-            console.log("trigger", trialid)
-            $state.go('trials.detail', {trialid: trialid});
         }
     })

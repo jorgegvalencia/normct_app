@@ -1,55 +1,28 @@
 <h2>Concepts</h2>
+<div class="pull-right">
+    <ul class="pager">
+        <li ng-class="{ 'disabled' : currentPage == 0 }"><a ng-click="currentPage > 0 && prevPage()">&larr; Previous</a></li>
+        <li ng-class="{ 'disabled' : currentPage == maxPage }"><a ng-click="currentPage < maxPage && nextPage()">Next &rarr;</a></li>
+    </ul>
+</div>
+<div>Results: {{conceptsNumber}}<div class="small">Showing results: {{ currentPage *limit}} - {{currentPage*limit + limit}}</div></div>
 <table class="table table-striped table-hover ">
   <thead>
-    <tr class="info">
-      <th>#</th>
-      <th>Column heading</th>
-      <th>Column heading</th>
-      <th>Column heading</th>
+    <tr class="primary">
+      <th>SCTID</th>
+      <th>CUI</th>
+      <th>FSN</th>
+      <th>Hierarchy</th>
+      <th>Focus concept</th>
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td>1</td>
-      <td>Column content</td>
-      <td>Column content</td>
-      <td>Column content</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>Column content</td>
-      <td>Column content</td>
-      <td>Column content</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>Column content</td>
-      <td>Column content</td>
-      <td>Column content</td>
-    </tr>
-    <tr>
-      <td>4</td>
-      <td>Column content</td>
-      <td>Column content</td>
-      <td>Column content</td>
-    </tr>
-    <tr>
-      <td>5</td>
-      <td>Column content</td>
-      <td>Column content</td>
-      <td>Column content</td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <td>Column content</td>
-      <td>Column content</td>
-      <td>Column content</td>
-    </tr>
-    <tr>
-      <td>7</td>
-      <td>Column content</td>
-      <td>Column content</td>
-      <td>Column content</td>
+    <tr ng-repeat="concept in concepts">
+      <td class="col-lg-1">{{concept.sctid}}</td>
+      <td class="col-lg-1">{{concept.cui}}</td>
+      <td class="col-lg-6">{{concept.fsn}}</td>
+      <td class="col-lg-2">{{concept.hierarchy}}</td>
+      <td class="col-lg-2">{{concept.focus_concept}}</td>
     </tr>
   </tbody>
 </table>
