@@ -15,7 +15,8 @@ angular.module('normct')
             getConceptsNumber: getConceptsNumber,
 
             // Reports
-            getConceptsFrecuency: getConceptsFrecuency
+            getConceptsFrecuency: getConceptsFrecuency,
+            getConceptMatches: getConceptMatches
         };
 
         function getTrial(trialid) {
@@ -138,6 +139,20 @@ angular.module('normct')
                 })
                 .catch(function(error) {
                     console.error("RESTClient getConceptsFrecuency:", status);
+                    deferred.reject(error.message);
+                })
+            return deferred.promise;
+        }
+
+         function getConceptMatches(conceptid, limit) {
+            var deferred = $q.defer();
+            $http.get('/api/reports/frecuency/matches/'+conceptid, { params: { limit: limit } })
+                .success(function(response, status) {
+                    console.log("RESTClient getConceptMatches:", status, response.matches);
+                    deferred.resolve(response.matches);
+                })
+                .catch(function(error) {
+                    console.error("RESTClient getConceptMatches:", status);
                     deferred.reject(error.message);
                 })
             return deferred.promise;

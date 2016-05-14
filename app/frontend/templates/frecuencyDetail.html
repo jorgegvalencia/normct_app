@@ -1,0 +1,19 @@
+<h2>{{conceptid}} - {{mainConcept}}</h2>
+<table class="table table-striped table-hover ">
+  <thead>
+    <tr class="primary">
+      <th>Trial</th>
+      <th>Synonym</th>
+      <th>Matched words</th>
+      <th>Utterance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="match in matches">
+      <td class="col-lg-1"><a href="https://clinicaltrials.gov/ct2/show/{{match.trial}}" target="blank">{{match.trial}}</a></td>
+      <td class="col-lg-1">{{match.synonym}}</td>
+      <td class="col-lg-2">{{match.matched_words}}</td>
+      <td class="col-lg-6" ng-bind-html="match.utterance | bold:match.phrase"></td>
+    </tr>
+  </tbody>
+</table>

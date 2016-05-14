@@ -37,13 +37,42 @@ router.get('/trials/count', function(req, res) {
 });
 
 router.get('/trials/:trialid', function(req, res) {
-	var sql = `select *
+	var sql = `
+	select 
+		clinical_trial.title, 
+		clinical_trial.topic 
 	from 
 		clinical_trial 
-	limit ${req.offset}, ${req.limit}`;
+	where
+		clinical_trial.nctid = '${req.params.trialid}'`;
+	var trialinfo = `
+	select 
+		attribute.trial, 
+		attribute.attribute, 
+		attribute.value  
+	from 
+		attribute
+	where
+		attribute.trial = '${req.params.trialid}'`;
+	var topic, title;
 	db.conn.query(sql)
 		.then(function(rows) {
-	    	res.status(200).json({ trial: rows });
+			if(rows.length > 0){
+				topic = rows[0].topic;
+				title = rows[0].title;
+				return db.conn.query(trialinfo);
+			}
+		})
+		.then(function (rows) {
+			var trial = {};
+			for(var i=0; i<rows.length; i++){
+				var key = rows[i].attribute;
+				var value = rows[i].value;
+				trial[key] = value;
+			}
+			trial['topic'] = topic;
+			trial['title'] = title;
+			res.status(200).json({ trial: trial });
 		})
 		.catch(function (err) {
 			console.log(err);
@@ -225,6 +254,36 @@ router.get('/reports/frecuency', function (req, res) {
 	db.conn.query(sql)
 		.then(function(rows) {
 	    	res.status(200).json({ concepts: rows });
+		})
+		.catch(function (err) {
+			console.log(err);
+			res.status(400).json({ error: err});
+		})
+})
+
+router.get('/reports/frecuency/matches/:conceptid', function (req, res) {
+	var sql = `
+	select 
+		concept.fsn, 
+		cmatch.trial, 
+		cmatch.phrase, 
+		cmatch.synonym, 
+		cmatch.matched_words, 
+		eligibility_criteria.utterance 
+	from 
+		cmatch, 
+		concept, 
+		eligibility_criteria 
+	where  
+		cmatch.sctid = '${req.params.conceptid}' and 
+		cmatch.sctid = concept.sctid and 
+		cmatch.number = eligibility_criteria.number and 
+		concept.active = 1 and 
+		cmatch.trial = eligibility_criteria.trial 
+	limit ${req.offset}, ${req.limit}`;
+	db.conn.query(sql)
+		.then(function(rows) {
+	    	res.status(200).json({ matches: rows });
 		})
 		.catch(function (err) {
 			console.log(err);

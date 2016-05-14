@@ -1,8 +1,44 @@
 angular.module('normct')
-    .controller('FrecuencyReportCtrl', function($scope, concepts, RESTClient) {
+    .controller('FrecuencyReportCtrl', function($scope, $state, concepts, RESTClient) {
         $scope.concepts = concepts;
+        $scope.totalConcepts = sum(concepts, 'frecuency');
+        $scope.pieChart = {
+            type: "PieChart",
+            options: {
+                title: 'SNOMED CT hierarchy distribution on most frequent concepts'
+            },
+            data: {
+                cols: [
+                    { id: "t", label: "Hierarchy", type: "string" },
+                    { id: "s", label: "Appearances", type: "number" }
+                ],
+                rows: buildPieChartData()
+            }
+        };
 
-        var sum = function(items, prop) {
+        $scope.columnChart = {
+            type: "ColumnChart",
+            options: {
+                title: 'SNOMED CT most frequent concepts',
+                textStle: {
+                    fontSize: 10
+                }
+            },
+            data: {
+                cols: [
+                    { id: "t", label: "Concept", type: "string" },
+                    { id: "s", label: "Appearances", type: "number" }
+                ],
+                rows: buildColumnChartData()
+            }
+        }
+
+
+        $scope.goToDetail = function(conceptid) {
+            $state.go('frecuency.detail', { conceptid: conceptid });
+        }
+
+        function sum(items, prop) {
             if (items == null) {
                 return 0;
             }
@@ -11,33 +47,31 @@ angular.module('normct')
             }, 0);
         };
 
-        $scope.totalConcepts = sum(concepts, 'frecuency');
-
-        $scope.myChartObject = {};
-        $scope.myChartObject.type = "PieChart";
-        $scope.myChartObject.options = {
-            'title': 'SNOMED CT hierarchy distribution on most frequent concepts'
-        };
-
-        var rows = [];
-        var map = {};
-        for (var i = 0; i < concepts.length; i++) {
-            if (map[concepts[i].hierarchy]) {
-                map[concepts[i].hierarchy] += concepts[i].frecuency;
-            } else {
-                map[concepts[i].hierarchy] = concepts[i].frecuency;
+        function buildPieChartData() {
+            var rows = [];
+            var map = {};
+            for (var i = 0; i < concepts.length; i++) {
+                if (map[concepts[i].hierarchy]) {
+                    map[concepts[i].hierarchy] += concepts[i].frecuency;
+                } else {
+                    map[concepts[i].hierarchy] = concepts[i].frecuency;
+                }
             }
+            for (var key in map) {
+                rows.push({ c: [{ v: key }, { v: map[key] }] });
+            }
+            return rows;
         }
 
-        for (var key in map) {
-            rows.push({ c: [{ v: key}, {v: map[key]}]});
-        }
-
-        $scope.myChartObject.data = {
-            "cols": [
-                { id: "t", label: "Hierarchy", type: "string" },
-                { id: "s", label: "Appearances", type: "number" }
-            ],
-            "rows": rows
+        function buildColumnChartData() {
+            var rows = [];
+            var map = {};
+            for (var i = 0; i < 60; i++) {
+                map[concepts[i].concept] = concepts[i].frecuency;
+            }
+            for (var key in map) {
+                rows.push({ c: [{ v: key }, { v: map[key] }] });
+            }
+            return rows;
         }
     })
