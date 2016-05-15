@@ -30,6 +30,23 @@ angular.module('normct')
                     }
                 }
             })
+            .state('normalform', {
+                url: '/reports/normalform',
+                views: {
+                    "header": {
+                        templateUrl: "templates/partials/_header.html"
+                    },
+                    "content": {
+                        templateUrl: "templates/normalform.html",
+                        controller: 'NormalformReportCtrl',
+                        resolve: {
+                            concepts: function (RESTClient) {
+                                return RESTClient.getNormalformFrecuency(100);
+                            }
+                        }
+                    }
+                }
+            })
             .state('frecuency.detail', {
                 url: '/detail/:conceptid',
                 views: {
@@ -41,7 +58,7 @@ angular.module('normct')
                         controller: 'FrecuencyReportDetailCtrl',
                         resolve: {
                             matches: function (RESTClient, $stateParams) {
-                                return RESTClient.getConceptMatches($stateParams.conceptid, 50);
+                                return RESTClient.getConceptFrecuencyDetail($stateParams.conceptid, 50);
                             }
                         }
                     }

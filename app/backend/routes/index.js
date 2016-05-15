@@ -4,9 +4,11 @@ var app     = express();
 var db      = require('../model/db');
 
 router.get('/trials', function(req, res) {
+	var topic = req.query.topic ? 'where clinical_trial.topic LIKE \'%' + req.query.topic + '%\' ' : '';
 	var sql = `select *
 	from 
 		clinical_trial 
+		${topic} 
 	limit ${req.offset}, ${req.limit}`;
 	db.conn.query(sql)
 		.then(function(rows) {
@@ -19,9 +21,11 @@ router.get('/trials', function(req, res) {
 });
 
 router.get('/trials/count', function(req, res) {
+	var topic = req.query.topic ? 'where clinical_trial.topic LIKE \'%' + req.query.topic + '%\' ' : '';
 	var sql = `select count(*) as number
 	from 
-		clinical_trial`;
+		clinical_trial 
+		${topic} `;
 	db.conn.query(sql)
 		.then(function(result) {
 			if(result.length > 0){
@@ -234,6 +238,7 @@ router.get('/trials/:trialid/criteria/:ecid/concepts', function (req, res) {
 })
 
 router.get('/reports/frecuency', function (req, res) {
+	var topic = req.query.topic === 'undefined' ? 'clinical_trial.topic LIKE %\'' + req.query.topic + '%\' and ' : '';
 	var sql = `
 	select 
 		concept.cui as cui, 
@@ -243,10 +248,13 @@ router.get('/reports/frecuency', function (req, res) {
 		concept.hierarchy as hierarchy,
 		concept.normalform as normalform 
 	from 
+		clinical_trial,
 		cmatch, 
 		concept 
 	where 
 		concept.sctid = cmatch.sctid and 
+		cmatch.trial = clinical_trial.nctid and 
+		${topic}
 		concept.active = 1 
 	group by sctid 
 	order by frecuency desc 
@@ -261,7 +269,7 @@ router.get('/reports/frecuency', function (req, res) {
 		})
 })
 
-router.get('/reports/frecuency/matches/:conceptid', function (req, res) {
+router.get('/reports/frecuency/detail/:conceptid', function (req, res) {
 	var sql = `
 	select 
 		concept.fsn, 
@@ -294,17 +302,21 @@ router.get('/reports/frecuency/matches/:conceptid', function (req, res) {
 router.get('/reports/normalform', function (req, res) {
 	var sql = `
 	select 
+		concept.cui as cui,
 		concept.sctid as sctid, 
-		concept.fsn as concept, 
-		concept.focus_concept as focus_concept,  
-		refinement.attribute_concept as attribute, 
-		refinement.value_concept as value, 
-		concept.normalform as normal_form  
-	from 
+		fsn as concept, 
+		count(fsn) as frecuency, 
+		concept.hierarchy as hierarchy 
+	from
 		refinement, 
-		concept 
+		concept, 
+		cmatch 
 	where 
-		concept.sctid = refinement.sctid
+		(attribute_concept = concept.sctid or value_concept = concept.sctid) and
+		concept.sctid = cmatch.sctid and 
+		concept.active = 1 
+	group by fsn 
+	order by frecuency desc 
 	limit ${req.offset}, ${req.limit}`;
 	db.conn.query(sql)
 		.then(function(rows) {
