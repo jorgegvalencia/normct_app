@@ -127,6 +127,9 @@ angular.module('normct')
                         resolve: {
                             trial: function(RESTClient, $stateParams) {
                                 return RESTClient.getTrial($stateParams.trialid);
+                            },
+                            ecs: function (RESTClient, $stateParams) {
+                                return RESTClient.getTrialCriteria($stateParams.trialid);
                             }
                         }
                     }

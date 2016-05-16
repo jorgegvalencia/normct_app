@@ -1,19 +1,58 @@
-<h2>{{conceptid}} - {{mainConcept}}</h2>
-<table class="table table-striped table-hover ">
-  <thead>
-    <tr class="primary">
-      <th>Trial</th>
-      <th>Synonym</th>
-      <th>Matched words</th>
-      <th>Utterance</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr ng-repeat="match in matches">
-      <td class="col-lg-1"><a href="https://clinicaltrials.gov/ct2/show/{{match.trial}}" target="blank">{{match.trial}}</a></td>
-      <td class="col-lg-1">{{match.synonym}}</td>
-      <td class="col-lg-2">{{match.matched_words}}</td>
-      <td class="col-lg-6" ng-bind-html="match.utterance | bold:match.phrase"></td>
-    </tr>
-  </tbody>
-</table>
+<!-- <button class="btn btn-primary" ng-click="toggleDetail()">Back</button> -->
+<div ng-hide="criteriaDetail">
+    <h2>{{conceptid}} - {{mainConcept}}</h2>
+    <table class="table table-striped table-hover ">
+        <thead>
+            <tr class="primary">
+                <th>Trial</th>
+                <th>Nº</th>
+                <th>Synonym</th>
+                <th>Matched words</th>
+                <th>Utterance</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="match in matches">
+                <td class="col-lg-1"><a href="https://clinicaltrials.gov/ct2/show/{{match.trial}}" target="blank">{{match.trial}}</a></td>
+                <td class="col-lg-1">{{match.number}}</td>
+                <td class="col-lg-1">{{match.synonym}}</td>
+                <td class="col-lg-2">{{match.matched_words}}</td>
+                <td class="col-lg-5" ng-bind-html="match.utterance | bold:match.phrase"></td>
+                <td class="col-lg-1">
+                    <button class="btn btn-default btn-sm" ng-click="goToEC(match.trial, match.number, match.utterance)"><i class="glyphicon glyphicon-search"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div ng-hide="!criteriaDetail">
+    <h3>Eligibility criteria concepts</h3>
+    <button class="btn btn-primary pull-right" ng-click="toggleDetail()">Back</button>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Utterance</h3>
+        </div>
+        <div class="panel-body">
+            {{currentUtt}}
+        </div>
+    </div>
+    <table class="table table-striped table-hover ">
+        <thead>
+            <tr class="primary">
+                <th>SCTID</th>
+                <th>Term</th>
+                <th>Hierarchy</th>
+                <th>Phrase</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="concept in ecs">
+                <td class="col-lg-1">{{concept.sctid}}</td>
+                <td class="col-lg-1">{{concept.term}}</td>
+                <td class="col-lg-1">{{concept.hierarchy}}</td>
+                <td class="col-lg-2">{{concept.phrase}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

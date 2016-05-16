@@ -9,6 +9,7 @@ angular.module('normct')
             // Eligibility criteria
             getCriterias: getCriterias,
             getCriteriasNumber: getCriteriasNumber,
+            getTrialCriteria: getTrialCriteria,
 
             // Concepts
             getConcepts: getConcepts,
@@ -17,7 +18,8 @@ angular.module('normct')
             // Reports
             getConceptsFrecuency: getConceptsFrecuency,
             getConceptFrecuencyDetail: getConceptFrecuencyDetail,
-            getNormalformFrecuency: getNormalformFrecuency
+            getNormalformFrecuency: getNormalformFrecuency,
+            getPhraseConcepts: getPhraseConcepts
         };
 
         function getTrial(trialid) {
@@ -124,6 +126,20 @@ angular.module('normct')
             return deferred.promise;
         }
 
+        function getTrialCriteria(trialid) {
+            var deferred = $q.defer();
+            $http.get('/api/criteria/'+trialid)
+                .success(function(response, status) {
+                    console.log("RESTClient getTrialCriteria:", status, response);
+                    deferred.resolve(response.ec);
+                })
+                .catch(function(error) {
+                    console.error("RESTClient getTrialCriteria:", status);
+                    deferred.reject(error.message);
+                })
+            return deferred.promise;
+        }
+
         function getCriteriasNumber() {
             var deferred = $q.defer();
             $http.get('/api/criteria/count')
@@ -175,6 +191,20 @@ angular.module('normct')
                 })
                 .catch(function(error) {
                     console.error("RESTClient getNormalformFrecuency:", status);
+                    deferred.reject(error.message);
+                })
+            return deferred.promise;
+        }
+
+        function getPhraseConcepts(trialid, ecid, limit) {
+            var deferred = $q.defer();
+            $http.get(' /api/trials/'+trialid+'/criteria/'+ecid+'/concepts', { params: { limit: limit } })
+                .success(function(response, status) {
+                    console.log("RESTClient getPhraseConcepts:", status, response.concepts);
+                    deferred.resolve(response.concepts);
+                })
+                .catch(function(error) {
+                    console.error("RESTClient getPhraseConcepts:", status);
                     deferred.reject(error.message);
                 })
             return deferred.promise;
