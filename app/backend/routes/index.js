@@ -198,7 +198,7 @@ router.get('/criteria/:trialid', function (req, res) {
 	limit ${req.offset}, ${req.limit}`;
 	db.conn.query(sql)
 		.then(function(rows) {
-	    	res.status(200).json({ concepts: rows });
+	    	res.status(200).json({ ec: rows });
 		})
 		.catch(function (err) {
 			console.log(err);
@@ -210,11 +210,10 @@ router.get('/criteria/:trialid', function (req, res) {
 router.get('/trials/:trialid/criteria/:ecid/concepts', function (req, res) {
 	var sql = `
 	select distinct
-		eligibility_criteria.number as number, 
 		cmatch.phrase as phrase, 
 		concept.fsn as term, 
-		concept.sctid as sctid, 
-		cmatch.trial as trial 
+		concept.sctid as sctid,
+		concept.hierarchy as hierarchy
 	from 
 		cmatch, 
 		eligibility_criteria, 
@@ -277,6 +276,7 @@ router.get('/reports/frecuency/detail/:conceptid', function (req, res) {
 		cmatch.phrase, 
 		cmatch.synonym, 
 		cmatch.matched_words, 
+		eligibility_criteria.number, 
 		eligibility_criteria.utterance 
 	from 
 		cmatch, 
@@ -288,6 +288,7 @@ router.get('/reports/frecuency/detail/:conceptid', function (req, res) {
 		cmatch.number = eligibility_criteria.number and 
 		concept.active = 1 and 
 		cmatch.trial = eligibility_criteria.trial 
+	order by cmatch.trial 
 	limit ${req.offset}, ${req.limit}`;
 	db.conn.query(sql)
 		.then(function(rows) {
