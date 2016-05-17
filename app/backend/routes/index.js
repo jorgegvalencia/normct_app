@@ -225,7 +225,7 @@ router.get('/trials/:trialid/criteria/:ecid/concepts', function (req, res) {
 		cmatch.trial = eligibility_criteria.trial and 
 		cmatch.sctid = concept.sctid and 
 		not eligibility_criteria.inc_exc = 0
-	limit ${req.offset}, ${req.limit}`;
+	order by phrase`;
 	db.conn.query(sql)
 		.then(function(rows) {
 	    	res.status(200).json({ concepts: rows });
@@ -301,27 +301,49 @@ router.get('/reports/frecuency/detail/:conceptid', function (req, res) {
 })
 
 router.get('/reports/normalform', function (req, res) {
-	var sql = `
-	select 
-		concept.cui as cui,
-		concept.sctid as sctid, 
-		fsn as concept, 
-		count(fsn) as frecuency, 
-		concept.hierarchy as hierarchy 
-	from
-		refinement, 
-		concept, 
-		cmatch 
-	where 
-		(attribute_concept = concept.sctid or value_concept = concept.sctid) and
-		concept.sctid = cmatch.sctid and 
-		concept.active = 1 
-	group by fsn 
-	order by frecuency desc 
-	limit ${req.offset}, ${req.limit}`;
-	db.conn.query(sql)
-		.then(function(rows) {
-	    	res.status(200).json({ concepts: rows });
+	var sql_att = `
+	select distinct
+		attribute_concept as sctid,
+		attribute_fsn as concept,
+		count(attribute_concept) as frecuency,
+		concept.hierarchy as hierarchy
+	from 
+		refinement,
+		concept
+	where
+		attribute_concept = concept.sctid 
+	group by attribute_concept 
+	order by frecuency`
+	var sql_val = `
+	select distinct
+		value_concept as sctid,
+		value_fsn as concept,
+		count(value_concept) as frecuency,
+		concept.hierarchy as hierarchy
+	from 
+		refinement,
+		concept
+	where
+		value_concept = concept.sctid 
+	group by value_concept 
+	order by frecuency`
+	db.conn.query(sql_val)
+		.then(function(values) {
+			if(values.length > 0){
+				return db.conn.query(sql_att)
+					.then(function (attributes) {
+						return [values, attributes];
+					});
+			}
+		})
+		.then(function (result) {
+			var values = result[0];
+			var attributes = result[1];
+			var concepts = result[0].concat(result[1]);
+			concepts.sort(function (a, b) {
+				return b.frecuency - a.frecuency;
+			})
+			res.status(200).json({ concepts: concepts });
 		})
 		.catch(function (err) {
 			console.log(err);

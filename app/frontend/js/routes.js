@@ -41,7 +41,7 @@ angular.module('normct')
                         controller: 'NormalformReportCtrl',
                         resolve: {
                             concepts: function (RESTClient) {
-                                return RESTClient.getNormalformFrecuency(100);
+                                return RESTClient.getNormalformFrecuency();
                             }
                         }
                     }
