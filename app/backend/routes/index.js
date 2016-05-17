@@ -301,32 +301,60 @@ router.get('/reports/frecuency/detail/:conceptid', function (req, res) {
 })
 
 router.get('/reports/normalform', function (req, res) {
-	var sql_att = `
-	select distinct
-		attribute_concept as sctid,
-		attribute_fsn as concept,
-		count(attribute_concept) as frecuency,
-		concept.hierarchy as hierarchy
-	from 
-		refinement,
-		concept
-	where
-		attribute_concept = concept.sctid 
-	group by attribute_concept 
-	order by frecuency`
+	// var sql_att = `
+	// select distinct
+	// 	attribute_concept as sctid,
+	// 	attribute_fsn as concept,
+	// 	count(attribute_concept) as frecuency,
+	// 	concept.hierarchy as hierarchy
+	// from 
+	// 	refinement,
+	// 	concept
+	// where
+	// 	attribute_concept = concept.sctid 
+	// group by attribute_concept 
+	// order by frecuency`
+	// var sql_val = `
+	// select distinct
+	// 	value_concept as sctid,
+	// 	value_fsn as concept,
+	// 	count(value_concept) as frecuency,
+	// 	concept.hierarchy as hierarchy
+	// from 
+	// 	refinement,
+	// 	concept
+	// where
+	// 	value_concept = concept.sctid 
+	// group by value_concept 
+	// order by frecuency`
 	var sql_val = `
-	select distinct
-		value_concept as sctid,
-		value_fsn as concept,
-		count(value_concept) as frecuency,
-		concept.hierarchy as hierarchy
+	select distinct 
+		refinement.value_concept as sctid,
+		concept.fsn as concept,
+		concept.hierarchy as hierarchy,
+		count(cmatch.sctid) as frecuency 
 	from 
 		refinement,
-		concept
-	where
-		value_concept = concept.sctid 
-	group by value_concept 
-	order by frecuency`
+		cmatch,
+		concept 
+	where 
+		refinement.sctid = cmatch.sctid and
+		refinement.value_concept = concept.sctid
+	group by value_concept;`
+	var sql_att = `
+	select distinct 
+		refinement.attribute_concept as sctid,
+		concept.fsn as concept,
+		concept.hierarchy as hierarchy,
+		count(cmatch.sctid) as frecuency 
+	from 
+		refinement,
+		cmatch,
+		concept 
+	where 
+		refinement.sctid = cmatch.sctid and
+		refinement.attribute_concept = concept.sctid
+	group by attribute_concept;`
 	db.conn.query(sql_val)
 		.then(function(values) {
 			if(values.length > 0){
