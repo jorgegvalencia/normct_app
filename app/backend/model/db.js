@@ -1,12 +1,13 @@
 var mysql = require('promise-mysql');
+var config = require('../../../config.json');
 var connection = {
 	conn: null
 }
 mysql.createConnection({
-        host: 'localhost',
-        user: 'dbuser',
-        password: '1234',
-        database: 'normdb'
+        host: config.database.host,
+        user: config.database.user,
+        password: config.database.password,
+        database: config.database.database
     })
     .then(function(conn) {
         connection.conn = conn;
