@@ -6,6 +6,10 @@ var logger       = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+
+
 var api       = require('./routes/index');
 
 // // view engine setup
@@ -37,16 +41,21 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/bower_components',express.static(path.join(__dirname, '../../bower_components/')));
 app.use('/fonts',express.static(path.join(__dirname, '../../bower_components/bootstrap/fonts/')));
 
-// API routes
+// Add socket.io in response object
+app.use(function(req, res, next){
+  res.io = io;
+  next();
+});
 
 // param parsing
 app.use(function (req, res, next) {
-	// offset and limit
-	req.offset = parseInt(req.query["offset"]  || 0);
-	req.limit = parseInt(req.query["limit"]  || 10);
-	next();
+  // offset and limit
+  req.offset = parseInt(req.query["offset"]  || 0);
+  req.limit = parseInt(req.query["limit"]  || 10);
+  next();
 })
 
+// API routes
 app.use('/api', api);
 
 // catch 404 and forward to error handler
@@ -74,4 +83,4 @@ app.use(function(err, req, res, next) {
 });
 
 
-module.exports = app;
+module.exports = {app: app, server: server};

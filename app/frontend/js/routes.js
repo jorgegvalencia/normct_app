@@ -8,7 +8,8 @@ angular.module('normct')
                         templateUrl: "templates/partials/_header.html"
                     },
                     "content": {
-                        templateUrl: "templates/home.html"
+                        templateUrl: "templates/home.html",
+                        controller: 'HomeCtrl'
                     }
                 },
                 controller: 'HomeCtrl'

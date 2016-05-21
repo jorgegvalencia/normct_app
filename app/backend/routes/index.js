@@ -2,6 +2,27 @@ var express = require('express');
 var router  = express.Router();
 var app     = express();
 var db      = require('../model/db');
+var spawn   = require('child_process').spawn;
+
+router.get('/test', function(req, res) {
+    console.log('Emitiendo por el socket')
+    var child = spawn('java', ['-jar', '../NormCTApp.jar', '-t', 'NCT01064349'], {
+        detached: true
+    });
+    // child.on('close', function(exitCode) {
+    //     if (exitCode !== 0) {
+    //         console.error('Something went wrong!', exitCode);
+    //     } else {
+    //         res.io.emit('socketToMe', 'YEAH MOTHAFUCKA');
+    //     }
+    // });
+    // child.stdout.on('data', function(data) {
+    //     res.io.emit('socketToMe', 'mmmm');
+    // });
+    res.json({});
+})
+
+
 
 router.get('/trials', function(req, res) {
 	var topic = req.query.topic ? 'where clinical_trial.topic LIKE \'%' + req.query.topic + '%\' ' : '';

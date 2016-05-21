@@ -19,8 +19,25 @@ angular.module('normct')
             getConceptsFrecuency: getConceptsFrecuency,
             getConceptFrecuencyDetail: getConceptFrecuencyDetail,
             getNormalformFrecuency: getNormalformFrecuency,
-            getPhraseConcepts: getPhraseConcepts
+            getPhraseConcepts: getPhraseConcepts,
+
+            // Test
+            getHome: getHome
         };
+
+        function getHome() {
+            var deferred = $q.defer();
+            $http.get('/api/test')
+                .success(function(response, status) {
+                    console.log("RESTClient getTrial:", status);
+                    deferred.resolve(response);
+                })
+                .catch(function(error) {
+                    console.error("RESTClient getTrial:", status);
+                    deferred.reject(error);
+                })
+            return deferred.promise;
+        }
 
         function getTrial(trialid) {
             var deferred = $q.defer();
