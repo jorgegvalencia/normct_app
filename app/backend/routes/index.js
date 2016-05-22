@@ -4,25 +4,72 @@ var app     = express();
 var db      = require('../model/db');
 var spawn   = require('child_process').spawn;
 
-router.get('/test', function(req, res) {
-    console.log('Emitiendo por el socket')
-    var child = spawn('java', ['-jar', '../NormCTApp.jar', '-t', 'NCT01064349'], {
-        detached: true
+router.post('/process/trial', function(req, res) {
+	var trial = req.body.trial;
+	console.log('Lanzando ECCET: ', trial);
+    var child = spawn('java', ['-jar', 'NormCTApp.jar', '-t', trial], {
+    	cwd: '..',
+        detached: true,
+        stdio: ['ignore']
     });
-    // child.on('close', function(exitCode) {
-    //     if (exitCode !== 0) {
-    //         console.error('Something went wrong!', exitCode);
-    //     } else {
-    //         res.io.emit('socketToMe', 'YEAH MOTHAFUCKA');
-    //     }
-    // });
-    // child.stdout.on('data', function(data) {
-    //     res.io.emit('socketToMe', 'mmmm');
-    // });
-    res.json({});
+	res.io.emit('socketToMe', child.pid);
+    child.unref();
+    child.on('exit', function (exitCode) {
+        if (exitCode !== 0) {
+            console.error('Something went wrong!');
+        }
+        else {
+        	res.io.emit('socketToMe', 'Tarea '+child.pid+ 'finalizada para el ensayo '+ trial);
+        	console.log('Tarea '+child.pid+ ' finalizada para el ensayo '+ trial, exitCode);
+        }
+    });
+    child.stdout.on('data', function(data) {
+    	if(data.toString() !== '\n')
+    		console.log(data.toString());
+        	res.io.emit('socketToMe', data.toString());
+    });
+    child.stderr.on('data', function(data) {
+    	// if(data.toString() === '...done')
+    	console.log(data.toString());
+        	res.io.emit('socketToMe', data.toString());
+    });
+    // child.stdout.pipe(res);
+    res.status(200).json({ message: 'TEST'});
 })
 
-
+router.post('/process/trials', function(req, res) {
+	var trials = req.body.trials;
+	console.log('Lanzando ECCET: ', trials);
+	var options = ['-jar', 'NormCTApp.jar', '-tl'];
+	options = options.concat(trials);
+	console.log(options);
+    var child = spawn('java', options, {
+    	cwd: '..',
+        detached: true,
+        stdio: ['ignore']
+    });
+	// res.io.emit('socketToMe', child.pid);
+    child.unref();
+    child.on('exit', function (exitCode) {
+        if (exitCode !== 0) {
+            console.error('Something went wrong!');
+        }
+        else {
+        	// res.io.emit('socketToMe', 'Tarea '+child.pid+ 'finalizada');
+        	console.log('Tarea '+child.pid+ ' finalizada ', exitCode);
+        }
+    });
+    child.stdout.on('data', function(data) {
+    	console.log(data.toString());
+        res.io.emit('socketToMe', data.toString());
+    });
+    child.stderr.on('data', function(data) {
+    	console.log(data.toString());
+        res.io.emit('socketToMe', data.toString());
+    });
+    // child.stdout.pipe(res);
+    res.status(200).json({ message: 'TEST'});
+})
 
 router.get('/trials', function(req, res) {
 	var topic = req.query.topic ? 'where clinical_trial.topic LIKE \'%' + req.query.topic + '%\' ' : '';
@@ -399,7 +446,5 @@ router.get('/reports/normalform', function (req, res) {
 			res.status(400).json({ error: err});
 		})
 })
-
-
 
 module.exports = router;

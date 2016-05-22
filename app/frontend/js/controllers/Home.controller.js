@@ -3,5 +3,8 @@ angular.module('normct').controller('HomeCtrl', function($scope, RESTClient, soc
     socket.on('socketToMe', function(data) {
         console.log(data);
     });
-    RESTClient.getHome();
+
+    $scope.processTrial = function (trialid) {
+    	RESTClient.processTrial(trialid);
+    }
 })

@@ -22,18 +22,18 @@ angular.module('normct')
             getPhraseConcepts: getPhraseConcepts,
 
             // Test
-            getHome: getHome
+            processTrial: processTrial
         };
 
-        function getHome() {
+        function processTrial(trialid) {
             var deferred = $q.defer();
-            $http.get('/api/test')
+            $http.post('/api/process/trial', { trial: trialid })
                 .success(function(response, status) {
-                    console.log("RESTClient getTrial:", status);
+                    console.log("RESTClient getTest:", status, response);
                     deferred.resolve(response);
                 })
                 .catch(function(error) {
-                    console.error("RESTClient getTrial:", status);
+                    console.error("RESTClient getTest:", status);
                     deferred.reject(error);
                 })
             return deferred.promise;
