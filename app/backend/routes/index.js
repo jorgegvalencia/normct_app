@@ -5,28 +5,39 @@ var db      = require('../model/db');
 var spawn   = require('child_process').spawn;
 
 router.post('/process/trial', function(req, res) {
+	var pattern = new RegExp(/NCT[0-9]{8}/i);
 	var trial = req.body.trial;
+	console.log(pattern.test(trial));
+	if(!trial || !pattern.test(trial)){
+		return res.status(404).json({ message: 'Trial doesn\'t match NCTID format'});
+	}
+	trial = trial.toUpperCase();
 	console.log('Lanzando ECCET: ', trial);
     var child = spawn('java', ['-jar', 'NormCTApp.jar', '-t', trial], {
     	cwd: '..',
         detached: true,
         stdio: ['ignore']
     });
-	res.io.emit('socketToMe', child.pid);
     child.unref();
-    child.on('exit', function (exitCode) {
+	res.io.emit('socketToMe', 'Tarea '+child.pid+' iniciada');
+    child.on('close', function (exitCode) {
         if (exitCode !== 0) {
             console.error('Something went wrong!');
         }
         else {
-        	res.io.emit('socketToMe', 'Tarea '+child.pid+ 'finalizada para el ensayo '+ trial);
+        	res.io.emit('socketToMe', 'Tarea '+child.pid+ ' finalizada para el ensayo '+ trial);
         	console.log('Tarea '+child.pid+ ' finalizada para el ensayo '+ trial, exitCode);
         }
     });
     child.stdout.on('data', function(data) {
-    	if(data.toString() !== '\n')
+    	if(data.toString().indexOf('ERROR') > -1){
     		console.log(data.toString());
-        	res.io.emit('socketToMe', data.toString());
+        	res.io.emit('socketToMe', data.toString());  		
+    	}
+    	else if(data.toString() !== '\n'){
+    		console.log(data.toString());
+        	res.io.emit('socketToMe', data.toString());    		
+    	}
     });
     child.stderr.on('data', function(data) {
     	// if(data.toString() === '...done')
@@ -39,6 +50,9 @@ router.post('/process/trial', function(req, res) {
 
 router.post('/process/trials', function(req, res) {
 	var trials = req.body.trials;
+	if(!trials  || trials.length < 1){
+		return res.status(404).json({ message: 'Trial list can\'t be empty'});
+	}
 	console.log('Lanzando ECCET: ', trials);
 	var options = ['-jar', 'NormCTApp.jar', '-tl'];
 	options = options.concat(trials);
@@ -48,7 +62,7 @@ router.post('/process/trials', function(req, res) {
         detached: true,
         stdio: ['ignore']
     });
-	// res.io.emit('socketToMe', child.pid);
+	res.io.emit('socketToMe', 'Tarea '+child.pid+' iniciada');
     child.unref();
     child.on('exit', function (exitCode) {
         if (exitCode !== 0) {
@@ -60,9 +74,17 @@ router.post('/process/trials', function(req, res) {
         }
     });
     child.stdout.on('data', function(data) {
-    	console.log(data.toString());
+        if (data.toString().indexOf('ERROR') > -1) {
+            console.log(data.toString());
+            res.io.emit('socketToMe', data.toString());
+        } else if (data.toString() !== '\n') {
+            console.log(data.toString());
+            res.io.emit('socketToMe', data.toString());
+        }
+        console.log(data.toString());
         res.io.emit('socketToMe', data.toString());
     });
+
     child.stderr.on('data', function(data) {
     	console.log(data.toString());
         res.io.emit('socketToMe', data.toString());

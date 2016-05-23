@@ -1,4 +1,67 @@
-<h1>Home</h1>
-<form ng-submit="processTrial(trialid)">
-	<input type="text" ng-model="trialid" name="trialid" placeholder="Trial" />
-</form>
+<h1>ECCET</h1>
+<div class="panel">
+    <div class="panel-heading">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#processtrial" data-toggle="tab" aria-expanded="true">Single trial</a></li>
+            <li class=""><a href="#processlist" data-toggle="tab" aria-expanded="false">Multiple trials</a></li>
+            <li class=""><a href="#log" data-toggle="tab" aria-expanded="false">Server log</a></li>
+        </ul>
+    </div>
+    <div class="panel-body">
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade active in" id="processtrial">
+                <form class="form-horizontal" ng-submit="processTrial(trialid)">
+                    <fieldset>
+                        <div class="form-group">
+                            <label for="inputEmail" class="col-lg-2 control-label">Clinical trial</label>
+                            <div class="col-lg-10">
+                                <input type="text" class="form-control" ng-model="trialid" placeholder="Example: NCT01881230">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-10 col-lg-offset-2">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="processlist">
+                <form class="form-horizontal" ng-submit="processTrials()">
+                    <fieldset>
+                        <div class="form-group">
+                            <label for="textArea" class="col-lg-2 control-label">Clinical trials</label>
+                            <div class="col-lg-10">
+                                <textarea class="form-control" rows="3" id="textArea" placeholder="Example: NCT01881230 ; NCT01334021 ;NCT00656604; NCT02550210" ng-model="trialList"></textarea>
+                                <span class="help-block">Specify the NCTID's of the clinicaltrials.gov trials to be processed by ECCET, separated by ";"</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-2 control-label">Radios</label>
+                            <div class="col-lg-10">
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked=""> Send me a notification when ended
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2"> Don't send me anything
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-10 col-lg-offset-2">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="tab-pane fade in well" id="log">
+                <samp ng-bind-html="log"></samp>
+            </div>
+        </div>
+    </div>
+</div>
