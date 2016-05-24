@@ -9,6 +9,9 @@ angular.module('normct').controller('HomeCtrl', function($scope, RESTClient, soc
         $scope.log_st += data.message + '<br>';
         if(data.status === 'Ended' || data.status === 'Failure'){
         	$scope.processing = false;
+        	if(data.status === 'Ended'){
+        		$scope.log_st += 'View <a href="#/trials/'+data.trial+'">detail</a>' + '<br>';
+        	}
         }
     });
 
@@ -20,13 +23,16 @@ angular.module('normct').controller('HomeCtrl', function($scope, RESTClient, soc
         }
     });
 
-    $scope.flushLog = function () {
+    $scope.flushLogST = function () {
     	$scope.log_st = "";
+    }
+
+    $scope.flushLogMT = function () {
     	$scope.log_mt = "";
     }
 
     $scope.processTrial = function (trialid) {
-    	$scope.flushLog();
+    	$scope.flushLogST();
     	$scope.processing = true;
     	RESTClient.processTrial(trialid)
     		.then(function (response) {
@@ -38,7 +44,7 @@ angular.module('normct').controller('HomeCtrl', function($scope, RESTClient, soc
     }
 
     $scope.processTrials = function () {
-    	$scope.flushLog();
+    	$scope.flushLogMT();
     	$scope.processing = true;
     	var trials = $scope.trialList.trim().split(/\s*;\s*/);
     	RESTClient.processTrials(trials)

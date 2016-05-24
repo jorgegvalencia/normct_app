@@ -107,7 +107,7 @@ angular.module('normct')
                         controller: 'TrialsCtrl',
                         resolve: {
                             trials: function(RESTClient) {
-                                return RESTClient.getTrials(0, 30);
+                                return RESTClient.getTrials(0, 1000);
                             },
                             ntrials: function(RESTClient) {
                                 return RESTClient.getTrialsNumber();

@@ -10,7 +10,7 @@
     <div class="panel-body">
         <div id="myTabContent" class="tab-content">
             <div class="tab-pane fade active in" id="processtrial">
-                <div class="col-lg-8">
+                <div class="col-lg-7">
                     <form class="form-horizontal" ng-submit="processTrial(trialid)">
                         <fieldset>
                             <div class="form-group">
@@ -22,20 +22,22 @@
                             <div class="form-group">
                                 <div class="col-lg-10 col-lg-offset-2">
                                     <button type="submit" class="btn btn-primary" ng-disabled="processing">Submit</button>
+                                    <p class="text-primary" style="margin: 10px 0px" ng-show="processing">Wait until the current task ends.</p>
                                 </div>
                             </div>
                         </fieldset>
                     </form>
                 </div>
-                <div class="col-lg-4">
-                    <h4>Server log</h4>
+                <div class="col-lg-5">
+                	<h4>Server log</h4>
                     <div class="well" style="height: 35%; overflow-y: scroll">
                         <samp ng-bind-html="log_st"></samp>
                     </div>
+                    <button class="btn btn-primary pull-right" ng-click="flushLogST()">Flush</button>
                 </div>
             </div>
             <div class="tab-pane fade" id="processlist">
-                <div class="col-lg-8">
+                <div class="col-lg-7">
                     <form class="form-horizontal" ng-submit="processTrials()">
                         <fieldset>
                             <div class="form-group">
@@ -45,7 +47,7 @@
                                     <span class="help-block">Specify the NCTID's of the clinicaltrials.gov trials to be processed by ECCET, separated by ";"</span>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label class="col-lg-2 control-label">Radios</label>
                                 <div class="col-lg-10">
                                     <div class="radio">
@@ -59,20 +61,22 @@
                                         </label>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="form-group">
                                 <div class="col-lg-10 col-lg-offset-2">
                                     <button type="submit" class="btn btn-primary"  ng-disabled="processing">Submit</button>
+                                    <p class="text-primary" style="margin: 10px 0px" ng-show="processing">Wait until the current task ends.</p>
                                 </div>
                             </div>
                         </fieldset>
                     </form>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-5">
                     <h4>Server log</h4>
                     <div class="well" style="height: 35%; overflow-y: scroll">
                         <samp ng-bind-html="log_mt"></samp>
                     </div>
+                	<button class="btn btn-primary pull-right" ng-click="flushLogMT()">Flush</button>
                 </div>
             </div>
             <!--             <div class="tab-pane fade in well" id="log">

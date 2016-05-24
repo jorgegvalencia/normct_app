@@ -23,7 +23,7 @@ router.post('/process/trial', function(req, res) {
             clients[socketid] && clients[socketid].emit('singleTrialSocket',  {status: 'Failure', message: 'Tarea '+child.pid+ ' finalizada para el ensayo '+ trial, code: exitCode});
         }
         else {
-        	clients[socketid] && clients[socketid].emit('singleTrialSocket', { status: 'Ended', message: 'Tarea '+child.pid+ ' finalizada para el ensayo '+ trial, code: exitCode});
+        	clients[socketid] && clients[socketid].emit('singleTrialSocket', { status: 'Ended', message: 'Tarea '+child.pid+ ' finalizada para el ensayo '+ trial, trial: trial, code: exitCode});
         	console.log('Tarea '+child.pid+ ' finalizada para el ensayo '+ trial, exitCode);
         }
     });
@@ -46,7 +46,8 @@ router.post('/process/trial', function(req, res) {
 
 router.post('/process/trials', function(req, res) {
 	var trials = req.body.trials;
-	if(!trials  || trials.length < 1){
+	var socketid = req.body.socket;
+	if(!trials  || trials.length < 1 || !socketid){
 		return res.status(404).json({ message: 'Trial list can\'t be empty'});
 	}
 	console.log('Lanzando ECCET: ', trials);
@@ -58,31 +59,31 @@ router.post('/process/trials', function(req, res) {
         detached: true,
         stdio: ['ignore']
     });
-	res.io.emit('trialListSocket', { status: 'Start', message: 'Tarea '+child.pid+' iniciada'});
+	clients[socketid] && clients[socketid].emit('trialListSocket', { status: 'Start', message: 'Tarea '+child.pid+' iniciada'});
     child.unref();
     child.on('exit', function (exitCode) {
         if (exitCode !== 0) {
             console.error('Something went wrong!');
-            res.io.emit('trialListSocket', {status: 'Failure', message: 'Tarea '+child.pid+ ' finalizada para el listado de ensayos ' + trials, code: exitCode});
+            clients[socketid] && clients[socketid].emit('trialListSocket', {status: 'Failure', message: 'Tarea '+child.pid+ ' finalizada para el listado de ensayos ' + trials, code: exitCode});
         }
         else {
         	console.log('Tarea '+child.pid+ ' finalizada ', exitCode);
-        	res.io.emit('trialListSocket', {status: 'Ended', message: 'Tarea '+child.pid+ ' finalizada para el listado de ensayos ' + trials, code: exitCode});
+        	clients[socketid] && clients[socketid].emit('trialListSocket', {status: 'Ended', message: 'Tarea '+child.pid+ ' finalizada para el listado de ensayos ' + trials, code: exitCode});
         }
     });
     child.stdout.on('data', function(data) {
         if (data.toString().indexOf('ERROR') > -1) {
             console.log(data.toString());
-            res.io.emit('trialListSocket', { status: 'Error', message: data.toString()});  
+            res.io.clients[socketid] && clients[socketid].emit('trialListSocket', { status: 'Error', message: data.toString()});
         } else if (data.toString() !== '\n') {
             console.log(data.toString());
-            res.io.emit('trialListSocket', { status: 'Running', message: data.toString()})
+            clients[socketid] && clients[socketid].emit('trialListSocket', { status: 'Running', message: data.toString()})
         }
     });
 
     child.stderr.on('data', function(data) {
     	console.log(data.toString());
-        res.io.emit('trialListSocket', { status: 'Error', message: data.toString()}); 
+        clients[socketid] && clients[socketid].emit('trialListSocket', { status: 'Error', message: data.toString()}); 
     });
     // child.stdout.pipe(res);
     res.status(200).json({ message: 'TEST'});

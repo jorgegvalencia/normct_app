@@ -2,21 +2,39 @@
 <div class="pull-right">
     <ul class="pager">
         <li ng-class="{ 'disabled' : currentPage == 0 }"><a ng-click="currentPage > 0 && prevPage()">&larr; Previous</a></li>
-        <li ng-class="{ 'disabled' : currentPage == maxPage }"><a ng-click="currentPage < maxPage && nextPage()">Next &rarr;</a></li>
+        <li ng-class="{ 'disabled' : currentPage == noOfPages }"><a ng-click="currentPage < noOfPages && nextPage()">Next &rarr;</a></li>
     </ul>
 </div>
-<div>Results: {{trialsNumber}}<div class="small">Showing results: {{ currentPage *limit}} - {{currentPage*limit + limit}}</div></div>
+<div>Results: {{totalItems}}
+    <div class="small">
+        Showing results: {{ currentPage *entryLimit}} - {{currentPage*entryLimit + entryLimit}}
+    </div>
+</div>
+<input type="text" ng-model="search.nctid" placeholder="NCTID" ng-model-options="{ debounce: 1000 }">
+<input type="text" ng-model="search.title" placeholder="Title" ng-model-options="{ debounce: 1000 }">
+<input type="text" ng-model="search.topic" placeholder="Topic" ng-model-options="{ debounce: 1000 }">
+<p><strong><a href="" ng-click="resetFilters()">Show All</a></strong></p>
+<br>
 <table class="table table-striped table-hover ">
     <thead>
         <tr class="primary">
-            <th>NCTID</th>
-            <th>Title</th>
-            <th>Topic</th>
-            <th></th>
+            <th ng-click="order('nctid')" class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
+                NCTID
+                <span class="sortorder" ng-show="predicate === 'nctid'" ng-class="{reverse:reverse}"></span>
+            </th>
+            <th ng-click="order('title')" class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                Title
+                <span class="sortorder" ng-show="predicate === 'title'" ng-class="{reverse:reverse}"></span>
+            </th>
+            <th ng-click="order('topic')" class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                Topic
+                <span class="sortorder" ng-show="predicate === 'topic'" ng-class="{reverse:reverse}"></span>
+            </th>
+            <th class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></th>
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="trial in trials">
+        <tr ng-animate="'animate'" ng-repeat="trial in trials | orderBy:predicate:reverse | filter:search | startFrom:(currentPage)*entryLimit | limitTo:entryLimit" class="slide">
             <td class="col-lg-1 col-md-1 col-sm-1 col-xs-1"><a href="https://clinicaltrials.gov/ct2/show/{{trial.nctid}}" target="blank">{{trial.nctid}}</a></td>
             <td class="col-lg-6 col-md-6 col-sm-6 col-xs-6">{{trial.title}}</td>
             <td class="col-lg-4 col-md-4 col-sm-4 col-xs-4">{{trial.topic}}</td>
@@ -24,6 +42,7 @@
         </tr>
     </tbody>
 </table>
+
 <!-- <ul class="pagination pagination-sm pull-right">
     <li ng-class="{ 'disabled' : currentPage == 0 }"><a ng-click="currentPage > 0 && prevPage()">&laquo;</a></li>
     <li ng-class="{ 'active' : currentPage == 1 }"><a ng-click="goPage(1)">1</a></li>
