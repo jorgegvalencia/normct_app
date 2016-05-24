@@ -1,5 +1,5 @@
 angular.module('normct')
-    .factory('RESTClient', function($http, $q) {
+    .factory('RESTClient', function($http, $q, socket) {
         return {
             // Trials
             getTrial: getTrial,
@@ -28,7 +28,7 @@ angular.module('normct')
 
         function processTrial(trialid) {
             var deferred = $q.defer();
-            $http.post('/api/process/trial', { trial: trialid })
+            $http.post('/api/process/trial', { trial: trialid, socket: socket.getSocketId() })
                 .success(function(response, status) {
                     console.log("RESTClient processTrial:", status, response);
                     deferred.resolve(response);
@@ -42,7 +42,7 @@ angular.module('normct')
 
         function processTrials(trials) {
             var deferred = $q.defer();
-            $http.post('/api/process/trials', { trials: trials })
+            $http.post('/api/process/trials', { trials: trials, socket: socket.getSocketId() })
                 .success(function(response, status) {
                     console.log("RESTClient processTrials:", status, response);
                     deferred.resolve(response);
