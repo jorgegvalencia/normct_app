@@ -1,38 +1,45 @@
 angular.module('normct')
-    .controller('ConceptsCtrl', function($scope, concepts, nconcepts, RESTClient) {
-    	$scope.limit = 100;
+    .controller('ConceptsCtrl', function($scope, concepts, nconcepts, RESTClient, filterFilter) {
         $scope.concepts = concepts;
-        $scope.conceptsNumber = nconcepts;
-        $scope.currentPage = 0;
-        $scope.maxPage = Math.round(nconcepts/$scope.limit);
 
-        var limit = $scope.limit;
-        console.log("Se instancia ConceptsCtrl", $scope.maxPage);
+        // create empty search model (object) to trigger $watch on update
+        $scope.search = {};
+        $scope.predicate = 'fsn';
+        $scope.reverse = false;
+        $scope.limitOptions = [10, 20, 30, 50, 100];
+
+        // pagination controls
+        $scope.currentPage = 0;
+        $scope.totalItems = $scope.concepts.length;
+        $scope.entryLimit = 100; // concepts per page
+        $scope.noOfPages = Math.ceil($scope.totalItems / $scope.entryLimit) - 1;
+
+        // $watch search to update pagination
+        $scope.$watch('search', function(newVal, oldVal) {
+            $scope.filtered = filterFilter($scope.concepts, newVal);
+            $scope.totalItems = $scope.filtered.length;
+            $scope.noOfPages = Math.ceil($scope.totalItems / $scope.entryLimit);
+            $scope.currentPage = 0;
+        }, true);
+
+        $scope.$watch('entryLimit', function() {
+            $scope.currentPage = 0;
+            $scope.noOfPages = Math.ceil($scope.totalItems / $scope.entryLimit) - 1;
+        })
+
+        $scope.order = function(predicate) {
+            $scope.reverse = ($scope.predicate === predicate) ? !$scope.reverse : false;
+            $scope.predicate = predicate;
+        };
 
         $scope.prevPage = function() {
-            var offset = ($scope.currentPage - 1) * limit;
-            if (offset >= 0) {
-                RESTClient.getConcepts(offset, limit)
-                    .then(function(concepts) {
-                        $scope.concepts = concepts;
-                        $scope.currentPage = $scope.currentPage - 1;
-                    })
-                    .catch(function(error) {
-                        alert('error');
-                    })
-            }
+            if ($scope.currentPage > 0)
+                $scope.currentPage--;
         }
 
         $scope.nextPage = function() {
-            var offset = ($scope.currentPage + 1) * limit;
-            RESTClient.getConcepts(offset, limit)
-                .then(function(concepts) {
-                    $scope.concepts = concepts;
-                    $scope.currentPage = $scope.currentPage + 1;
-                })
-                .catch(function(error) {
-                    alert('error');
-                })
+            if ($scope.currentPage < $scope.noOfPages)
+                $scope.currentPage++;
         }
 
         $scope.goPage = function(page) {
@@ -46,4 +53,9 @@ angular.module('normct')
                     alert('error');
                 })
         }
+
+        $scope.resetFilters = function() {
+            // needs to be a function or it won't trigger a $watch
+            $scope.search = {};
+        };
     })

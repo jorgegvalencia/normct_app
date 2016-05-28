@@ -15,7 +15,7 @@ angular.module('normct')
                 controller: 'HomeCtrl'
             })
             .state('frecuency', {
-                url: '/reports/frecuency',
+                url: '/reports/frecuency?topic',
                 views: {
                     "header": {
                         templateUrl: "templates/partials/_header.html"
@@ -24,15 +24,15 @@ angular.module('normct')
                         templateUrl: "templates/frecuency.html",
                         controller: 'FrecuencyReportCtrl',
                         resolve: {
-                            concepts: function (RESTClient) {
-                                return RESTClient.getConceptsFrecuency(100);
+                            concepts: function (RESTClient, $stateParams) {
+                                return RESTClient.getConceptsFrecuency(100, $stateParams.topic);
                             }
                         }
                     }
                 }
             })
             .state('normalform', {
-                url: '/reports/normalform',
+                url: '/reports/normalform?topic',
                 views: {
                     "header": {
                         templateUrl: "templates/partials/_header.html"
@@ -41,8 +41,8 @@ angular.module('normct')
                         templateUrl: "templates/normalform.html",
                         controller: 'NormalformReportCtrl',
                         resolve: {
-                            concepts: function (RESTClient) {
-                                return RESTClient.getNormalformFrecuency();
+                            concepts: function (RESTClient, $stateParams) {
+                                return RESTClient.getNormalformFrecuency(100, $stateParams.topic);
                             }
                         }
                     }
@@ -87,7 +87,7 @@ angular.module('normct')
                         controller: 'ConceptsCtrl',
                         resolve: {
                             concepts: function(RESTClient) {
-                                return RESTClient.getConcepts(0, 100);
+                                return RESTClient.getConcepts(0, 10000);
                             },
                             nconcepts: function(RESTClient) {
                                 return RESTClient.getConceptsNumber();

@@ -214,9 +214,9 @@ angular.module('normct')
             return deferred.promise;
         }
 
-        function getNormalformFrecuency(limit) {
+        function getNormalformFrecuency(limit, topic) {
             var deferred = $q.defer();
-            $http.get('/api/reports/normalform', { params: { limit: limit } })
+            $http.get('/api/reports/normalform', { params: { limit: limit, topic: topic } })
                 .success(function(response, status) {
                     console.log("RESTClient getNormalformFrecuency:", status, response.concepts);
                     deferred.resolve(response.concepts);

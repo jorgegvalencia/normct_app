@@ -310,7 +310,8 @@ router.get('/trials/:trialid/criteria/:ecid/concepts', function (req, res) {
 		cmatch.number = eligibility_criteria.number and 
 		cmatch.trial = eligibility_criteria.trial and 
 		cmatch.sctid = concept.sctid and 
-		not eligibility_criteria.inc_exc = 0
+		not eligibility_criteria.inc_exc = 0 and
+		concept.active = 1 
 	order by phrase`;
 	db.conn.query(sql)
 		.then(function(rows) {
@@ -323,7 +324,7 @@ router.get('/trials/:trialid/criteria/:ecid/concepts', function (req, res) {
 })
 
 router.get('/reports/frecuency', function (req, res) {
-	var topic = req.query.topic === 'undefined' ? 'clinical_trial.topic LIKE %\'' + req.query.topic + '%\' and ' : '';
+	var topic = req.query.topic !== undefined ? 'clinical_trial.topic LIKE \'%' + req.query.topic + '%\' and ' : '';
 	var sql = `
 	select 
 		concept.cui as cui, 
@@ -387,6 +388,8 @@ router.get('/reports/frecuency/detail/:conceptid', function (req, res) {
 })
 
 router.get('/reports/normalform', function (req, res) {
+	var topicfrom = req.query.topic !== undefined ? 'clinical_trial, ' : '';
+	var topicwhere = req.query.topic !== undefined ? 'clinical_trial.topic LIKE \'%' + req.query.topic + '%\' and clinical_trial.nctid = cmatch.trial and ' : '';
 	// var sql_att = `
 	// select distinct
 	// 	attribute_concept as sctid,
@@ -422,11 +425,14 @@ router.get('/reports/normalform', function (req, res) {
 	from 
 		refinement,
 		cmatch,
+		${topicfrom}
 		concept 
 	where 
 		refinement.sctid = cmatch.sctid and
+		${topicwhere}
 		refinement.value_concept = concept.sctid
-	group by value_concept;`
+	group by value_concept
+	;`;
 	var sql_att = `
 	select distinct 
 		refinement.attribute_concept as sctid,
@@ -436,27 +442,58 @@ router.get('/reports/normalform', function (req, res) {
 	from 
 		refinement,
 		cmatch,
+		${topicfrom}
 		concept 
 	where 
 		refinement.sctid = cmatch.sctid and
+		${topicwhere}
 		refinement.attribute_concept = concept.sctid
-	group by attribute_concept;`
+	group by attribute_concept
+	;`;
+	var sql_focus = `
+	select distinct
+		concept.focus_concept as sctid,
+		concept.focus_concept_fsn as concept,
+		concept.focus_concept_hierarchy as hierarchy,
+    	count(cmatch.sctid) as frecuency
+	from
+    	cmatch,
+		concept,
+		${topicfrom}
+    	refinement
+	where
+		refinement.sctid = cmatch.sctid and
+		${topicwhere}
+    	concept.sctid = cmatch.sctid
+	group by
+		concept.focus_concept
+	;`;
+	var result = [];
 	db.conn.query(sql_val)
 		.then(function(values) {
 			if(values.length > 0){
-				return db.conn.query(sql_att)
-					.then(function (attributes) {
-						return [values, attributes];
-					});
+				result = result.concat(values);
 			}
+			return db.conn.query(sql_att);
+		})
+		.then(function (attributes) {
+			if(attributes.length > 0){
+				result = result.concat(attributes);
+			}
+			return db.conn.query(sql_focus);
+		})
+		.then(function (focus_concepts) {
+			if(focus_concepts.length > 0){
+				result = result.concat(focus_concepts);
+			}
+			return Promise.resolve(result);
 		})
 		.then(function (result) {
-			var values = result[0];
-			var attributes = result[1];
-			var concepts = result[0].concat(result[1]);
+			var concepts = result;
 			concepts.sort(function (a, b) {
 				return b.frecuency - a.frecuency;
 			})
+			concepts = concepts.slice(0,req.limit);
 			res.status(200).json({ concepts: concepts });
 		})
 		.catch(function (err) {

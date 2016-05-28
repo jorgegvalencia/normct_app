@@ -1,7 +1,7 @@
 angular.module('normct')
     .controller('NormalformReportCtrl', function($scope, $state, concepts, RESTClient) {
-        $scope.concepts = concepts;
-        $scope.totalConcepts = sum(concepts, 'frecuency');
+        $scope.concepts = concepts ? concepts : [];
+        $scope.totalConcepts = sum(concepts);
         $scope.pieChart = {
             type: "PieChart",
             options: {
@@ -33,19 +33,36 @@ angular.module('normct')
             }
         }
 
-
         $scope.goToDetail = function(conceptid) {
             $state.go('frecuency.detail', { conceptid: conceptid });
         }
 
-        function sum(items, prop) {
-            if (items == null) {
+        $scope.filter = function () {
+            $state.go('normalform', {topic: $scope.keywords});
+        }
+
+        // function sum(items, prop) {
+        //     if (items == null) {
+        //         return 0;
+        //     }
+        //     return items.reduce(function(a, b) {
+        //         return b[prop] === undefined ? a : a + b[prop];
+        //     });
+        // };
+
+        function getSum(a, b) {
+            return b['frecuency'] === undefined ? a['frecuency'] || a : (a['frecuency'] || a) + b['frecuency'];
+        }
+
+        function sum(items) {
+            if (items === null || items === undefined) {
                 return 0;
+            } else {
+                var total = items.reduce(getSum);
+                console.log(total);
+                return total;
             }
-            return items.reduce(function(a, b) {
-                return b[prop] == null ? a : a + b[prop];
-            }, 0);
-        };
+        }
 
         function buildPieChartData() {
             var rows = [];
@@ -66,8 +83,12 @@ angular.module('normct')
         function buildColumnChartData() {
             var rows = [];
             var map = {};
-            for (var i = 0; i < 60; i++) {
-                map[concepts[i].concept] = concepts[i].frecuency;
+            for (var i = 0; i < 60 && i < concepts.length; i++) {
+                if (map[concepts[i].concept]) {
+                    map[concepts[i].concept] += concepts[i].frecuency;
+                } else {
+                    map[concepts[i].concept] = concepts[i].frecuency;
+                }
             }
             for (var key in map) {
                 rows.push({ c: [{ v: key }, { v: map[key] }] });

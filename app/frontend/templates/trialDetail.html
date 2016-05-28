@@ -28,17 +28,41 @@
         {{trial.brief_summary}}
     </div>
 </div>
-<table class="table table-striped table-hover ">
+<table class="table table-condensed">
     <thead>
         <tr class="primary">
             <th>Nº</th>
             <th>Utterance</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="ec in ecs">
+        <tr ng-repeat-start="ec in ecs" ng-click="selectRow(ec, $index)" class="selectable">
             <td class="col-lg-2">{{ec.number}}</td>
-            <td class="col-lg-10">{{ec.utterance}}</td>
+            <td class="col-lg-8">{{ec.utterance}}</td>
+            <td class="col-lg-2"><a class="small">Click to view concepts</a></td>
+        </tr>
+        <tr ng-repeat-end ng-if="isSelected(ec)">
+            <td colspan="3">
+                <table class="table table-striped slide_outer" ng-show="concepts.length > 0">
+                    <thead>
+                        <tr class="primary">
+                            <th>SCTID</th>
+                            <th>Term</th>
+                            <th>Hierarchy</th>
+                            <th>Phrase</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="concept in concepts">
+                            <td class="col-lg-1">{{concept.sctid}}</td>
+                            <td class="col-lg-1">{{concept.term}}</td>
+                            <td class="col-lg-1">{{concept.hierarchy}}</td>
+                            <td class="col-lg-2">{{concept.phrase}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
         </tr>
     </tbody>
 </table>

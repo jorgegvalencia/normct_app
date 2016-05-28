@@ -38,6 +38,10 @@ angular.module('normct')
             $state.go('frecuency.detail', { conceptid: conceptid });
         }
 
+        $scope.filter = function () {
+            $state.go('frecuency', {topic: $scope.keywords});
+        }
+
         function sum(items, prop) {
             if (items == null) {
                 return 0;
@@ -66,8 +70,12 @@ angular.module('normct')
         function buildColumnChartData() {
             var rows = [];
             var map = {};
-            for (var i = 0; i < 60; i++) {
-                map[concepts[i].concept] = concepts[i].frecuency;
+            for (var i = 0; i < 60 && i < concepts.length; i++) {
+                if (map[concepts[i].concept]) {
+                    map[concepts[i].concept] += concepts[i].frecuency;
+                } else {
+                    map[concepts[i].concept] += concepts[i].frecuency;
+                }
             }
             for (var key in map) {
                 rows.push({ c: [{ v: key }, { v: map[key] }] });
