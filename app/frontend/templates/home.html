@@ -13,16 +13,19 @@
                 <div class="col-lg-7">
                     <form class="form-horizontal" ng-submit="processTrial(trialid)">
                         <fieldset>
-                            <div class="form-group">
+                            <div class="form-group" ng-class="{ 'has-error' : invalid }">
                                 <label for="inputEmail" class="col-lg-2 control-label">Clinical trial</label>
-                                <div class="col-lg-10">
+                                <div class="col-lg-6">
                                     <input type="text" class="form-control" ng-model="trialid" placeholder="Example: NCT01881230">
+                                </div>
+                                <div class="col-lg-4">
+                                    <p class="text-danger item" style="margin: 10px 0px" ng-show="invalid">The specified trial is invalid.</p>
+                                    <p class="text-primary item" style="margin: 10px 0px" ng-show="processing == 2 && !invalid">Wait until the current task ends.</p>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-10 col-lg-offset-2">
-                                    <button type="submit" class="btn btn-primary" ng-disabled="processing">Submit</button>
-                                    <p class="text-primary" style="margin: 10px 0px" ng-show="processing">Wait until the current task ends.</p>
+                                    <button type="submit" class="btn btn-primary" ng-disabled="processing > 0">Submit</button>
                                 </div>
                             </div>
                         </fieldset>
