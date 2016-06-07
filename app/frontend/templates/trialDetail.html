@@ -1,0 +1,68 @@
+<h4><a href="{{trial.url}}" target="blank">{{trial.title}}</a></h4>
+<p class="lead">{{trial.topic}}</p>
+<table class="table table-bordered table-hover ">
+    <thead>
+        <tr class="primary">
+            <th>Gender</th>
+            <th>Last changed date</th>
+            <th>Start date</th>
+            <th>Study type</th>
+            <th>Overall status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="col-lg-1">{{trial.gender}}</td>
+            <td class="col-lg-2">{{trial.lastchanged_date}}</td>
+            <td class="col-lg-2">{{trial.start_date}}</td>
+            <td class="col-lg-2">{{trial.study_type}}</td>
+            <td class="col-lg-2">{{trial.overall_status}}</td>
+        </tr>
+    </tbody>
+</table>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Summary</h3>
+    </div>
+    <div class="panel-body">
+        {{trial.brief_summary}}
+    </div>
+</div>
+<table class="table table-condensed">
+    <thead>
+        <tr class="primary">
+            <th>Nº</th>
+            <th>Criteria</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat-start="ec in ecs" ng-click="selectRow(ec, $index)" class="selectable">
+            <td class="col-lg-2">{{ec.number}}</td>
+            <td class="col-lg-8">{{ec.utterance}}</td>
+            <td class="col-lg-2"><a class="small">Click to view concepts</a></td>
+        </tr>
+        <tr ng-repeat-end ng-if="isSelected(ec)">
+            <td colspan="3">
+                <table class="table table-striped slide_outer" ng-show="concepts.length > 0">
+                    <thead>
+                        <tr class="primary">
+                            <th>SCTID</th>
+                            <th>Term</th>
+                            <th>Hierarchy</th>
+                            <th>Phrase</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="concept in concepts">
+                            <td class="col-lg-1">{{concept.sctid}}</td>
+                            <td class="col-lg-1">{{concept.term}}</td>
+                            <td class="col-lg-1">{{concept.hierarchy}}</td>
+                            <td class="col-lg-2">{{concept.phrase}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>

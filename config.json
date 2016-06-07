@@ -1,0 +1,8 @@
+{
+    "database": {
+        "host": "10.0.2.2",
+        "user": "dbuser",
+        "password": "1234",
+        "database": "normdb"
+    }
+}

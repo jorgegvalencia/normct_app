@@ -1,0 +1,22 @@
+{
+  "name": "normct_app",
+  "description": "",
+  "main": "",
+  "authors": [
+    "jorgegvalencia <jorgegvalencia@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/jorgegvalencia/normct_app",
+  "private": true,
+  "dependencies": {
+    "angular": "^1.5.5",
+    "angular-ui-router": "^0.2.18",
+    "bootstrap": "^3.3.6",
+    "angular-animate": "^1.5.5",
+    "angular-google-chart": "angular-google-charts#^0.0.11",
+    "angular-sanitize": "^1.5.5"
+  },
+  "resolutions": {
+    "angular": "^1.5.5"
+  }
+}
