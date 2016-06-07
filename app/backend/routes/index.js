@@ -41,7 +41,7 @@ router.post('/process/trial', function(req, res) {
     	console.log(data.toString());
         	clients[socketid] && clients[socketid].emit('singleTrialSocket',  { status: 'Error', message: data.toString()});    		
     });
-    res.status(200).json({ message: 'TEST'});
+    res.status(200).json({ message: 'OK'});
 })
 
 router.post('/process/trials', function(req, res) {
@@ -86,7 +86,7 @@ router.post('/process/trials', function(req, res) {
         clients[socketid] && clients[socketid].emit('trialListSocket', { status: 'Error', message: data.toString()}); 
     });
     // child.stdout.pipe(res);
-    res.status(200).json({ message: 'TEST'});
+    res.status(200).json({ message: 'OK'});
 })
 
 router.get('/trials', function(req, res) {
@@ -430,7 +430,8 @@ router.get('/reports/normalform', function (req, res) {
 	where 
 		refinement.sctid = cmatch.sctid and
 		${topicwhere}
-		refinement.value_concept = concept.sctid
+		refinement.value_concept = concept.sctid and
+		concept.active = 1
 	group by value_concept
 	;`;
 	var sql_att = `
@@ -447,7 +448,8 @@ router.get('/reports/normalform', function (req, res) {
 	where 
 		refinement.sctid = cmatch.sctid and
 		${topicwhere}
-		refinement.attribute_concept = concept.sctid
+		refinement.attribute_concept = concept.sctid and
+		concept.active = 1
 	group by attribute_concept
 	;`;
 	var sql_focus = `
@@ -464,7 +466,8 @@ router.get('/reports/normalform', function (req, res) {
 	where
 		refinement.sctid = cmatch.sctid and
 		${topicwhere}
-    	concept.sctid = cmatch.sctid
+    	concept.sctid = cmatch.sctid and
+    	concept.active = 1
 	group by
 		concept.focus_concept
 	;`;

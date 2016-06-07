@@ -74,7 +74,7 @@ angular.module('normct')
                 if (map[concepts[i].concept]) {
                     map[concepts[i].concept] += concepts[i].frecuency;
                 } else {
-                    map[concepts[i].concept] += concepts[i].frecuency;
+                    map[concepts[i].concept] = concepts[i].frecuency;
                 }
             }
             for (var key in map) {

@@ -40,6 +40,7 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Give access to bower components
 app.use('/bower_components', express.static(path.join(__dirname, '../../bower_components/')));
+app.use('/node_modules', express.static(path.join(__dirname, '../../node_modules/')));
 app.use('/fonts', express.static(path.join(__dirname, '../../bower_components/bootstrap/fonts/')));
 
 io.sockets.on('connection', function(socket) {
