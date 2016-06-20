@@ -48,7 +48,7 @@ angular.module('normct').controller('AppCtrl', function($scope, $uibModal, socke
 
         modalInstance.result
             .then(function(message) {
-                $state.go('trial', { trial: message} );
+                $state.go('trials.detail', { trialid: message} );
             })
             .catch(function() {
                 $log.info('Modal dismissed at: ' + new Date());
